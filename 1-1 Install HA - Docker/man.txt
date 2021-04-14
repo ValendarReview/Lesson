@@ -1,5 +1,23 @@
 #Скачать и установить
 https://www.raspberrypi.org/software/
 https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html
-+ система Raspberry Pi OS
+#+ система Raspberry Pi OS
 https://www.raspberrypi.org/software/operating-systems/#raspberry-pi-os-32-bit
+
+#Входим по ssh на сервер Raspberry Pi
+#Логин:
+pi
+#Пароль: ( пароль не видно при вводе - не боимся! )
+raspberry
+
+#Зайдем под повышенными привелегиями (аля из-под админа в Виновс)
+sudo - s
+
+#вводим пароль 
+raspberry
+
+#Обновляем пакеты
+apt update && apt upgrade -y
+
+
+
