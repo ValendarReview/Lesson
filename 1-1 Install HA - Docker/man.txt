@@ -7,17 +7,44 @@ https://www.raspberrypi.org/software/operating-systems/#raspberry-pi-os-32-bit
 #Копируем пустой файл ssh в корень диска boot. Подключаем одноплатник к Ethernet и смотрим выданый IP на роутере. Входим по ssh на сервер Raspberry Pi
 #Логин:
 pi
-#Пароль: ( пароль не видно при вводе - не боимся! )
+#Пароль: (пароль не видно при вводе - не боимся!)
 raspberry
 
 #Зайдем под повышенными привелегиями (аля из-под админа в Виновс)
 sudo - s
 
-#вводим пароль 
+#вводим пароль если запросит (пароль не видно при вводе - не боимся!)
 raspberry
 
 #Обновляем пакеты
-apt update && apt upgrade -y
+apt update & apt upgrade -y & apt list --upgradable
 
+#Обновляем Raspberry OS.  На вопрос y/n Нажимаем y на клавиатуре.
+rpi-update
+#После появления строчки "*** A reboot is needed to activate the new firmware", перезагружаем сервер.
+reboot
 
+#после этого перезагруежмся, правйокнопкой на верхнем окне PuTTY и выбирваем "Restart session"
+
+#Добвляем нового пользваотеля,
+sudo -s & adduser NAME & usermod -aG sudo NAME
+sudo -s
+adduser name
+
+#задаем ему пароль. Пароль видм не будет. Повторяем пароль. Все остальные действия просто жмем Enter. В конце жмем "Y"
+
+#И добавляем его в группу супер пользователя sudo
+usermod -aG sudo name
+
+#Зайдем в систему под новым пользоватлем name
+su name 
+
+#Повысим права до супер пользоватлея, введя пароль от учетной записи name
+sudo -s
+
+#Настраиваем сетевые подключения по Ethernet и WiFi. Для этого устнавливаем network-manager.
+apt-get install -y network-manager
+
+#Отключаем встроенный DHCP на двух сетевых интерфейсах 
+echo "denyinterfaces wlan0" >> /etc/dhcpcd.conf & echo "denyinterfaces eth0" >> /etc/dhcpcd.conf
 
