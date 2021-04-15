@@ -48,3 +48,32 @@ apt-get install -y network-manager
 #Отключаем встроенный DHCP на двух сетевых интерфейсах 
 echo "denyinterfaces wlan0" >> /etc/dhcpcd.conf & echo "denyinterfaces eth0" >> /etc/dhcpcd.conf
 
+#Отлюкчаем получение случайного MAC адреса при переразгрузке девайса.
+echo "[connection]
+wifi.mac-address-randomization=1
+[device]
+wifi.scan-rand-mac-address=no" >> /etc/NetworkManager/conf.d/100-disable-wifi-mac-randomization.conf
+
+#Настраиваем статический IP адрес для Ethernet + WiFi + подклчюемся по Wifi к домешнему роутеру. Тут нам поможет +- графическое приложение nmtui
+nmtui
+ 
+ #Activate a connection  - выбираем имя вашей WiFi точки доступа "NAME-WiFi"   - жмем  <Activate> 
+ #Воодим пароль для подключения к WiFi сети "Passwords or encryption keys are required to access the                                                                         wireless network 'Businka'"
+ #После успешоного подлкючния жмем BACK и переходим в раздел активации и устновки отдельного ИП адреса
+ #Выбираем "Edit a connection" - далее   "Wired connection 1 " -  <Edit...> 
+ #В поле "IPv4 CONFIGURATION <A" переходим на строку "Automatic" и выбираем "Manual" после жмем на " <Show>  " и в раскрывшемся меню устанавливаем вручную IP адрес( напрмиер 192.168.1.5), шлюз и DNS сервер (можно использовать IP вашего шлюза ( роутера)  192.168.1.1))
+ #Выбираем "Edit a connection" - далее   "Wifi - Имя Вашей WiFi сети - <Edit...> 
+ #В поле "IPv4 CONFIGURATION <A" переходим на строку "Automatic" и выбираем "Manual" после жмем на " <Show>  " и в раскрывшемся меню устанавливаем вручную IP адрес( напрмиер 192.168.1.6), шлюз и DNS сервер (можно использовать IP вашего шлюза ( роутера)  192.168.1.1))
+
+
+
+
+#Настраиваем локаль, часовой пояс и сетевые настройки Ethernet и WiFi
+raspi-config
+
+# пункт 5 Localisation Options -  I1 Change Locale -  пробелом надо установить локаль -  ru_RU.UTF-8 UTF-8 - TAB и жмем OK. В следующем окне "Default locale for the system environment: " - выбираем  ru_RU.UTF-8     - опять OK
+# пункт 5 Localisation Options / I2 Change Timezone - пробелом выбираем нужный часовой пояс
+
+#
+
+
