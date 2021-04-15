@@ -82,9 +82,13 @@ reboot
 
 #Не забываем, что IP адрес изменился, подключаемся SSH PuTTY по тому, который указали вручную. В моем случае это 192.168.1.5 - если по Ethernet кабелю.
 sudo -s 
-# пароль пользоватлея и изменяем метрику в параметрах маршрутизации. 100 это Ethernet подключение, а 600 Wifi. Для стабильной работы WiFi, после отклчюения Ethernet нам надо изменить 600 на 105.
+# Вводим пароль пользоватлея и Проверяем метрику подключний в параметрах маршрутизации. 100 это Ethernet подключение, а 600 Wifi. Для стабильной работы WiFi, после отклчюения Ethernet нам надо изменить 600 на 105.
+route
+
 #переходим по пути 
 cd /etc/NetworkManager/system-connections/
+
+#Вызываем Midnight Commander
 mc
 
 # Жмем F4 на файле - названии вашей WiFi сети.
@@ -92,6 +96,23 @@ mc
 # После указания IP адреса в параметрах "[ipv4]" дописываем
 route-metric=105
 
+# Жмем F2 и Enter - сохранить
+# Перезагружаем девайс и проверяем
+reboot
+sudo -s
+route
 
+#Устанавливаем Docker — программное обеспечение для автоматизации развёртывания и управления приложениями.
+curl -fsSL get.docker.com -o get-docker.sh && sh get-docker.sh
+
+# Создаем группу безопасности docker и  добавляем в нее пользователя docker
+groupadd docker
+gpasswd -a $USER docker
+newgrp docker
+
+# Устанавливаем Portainer — это удобная ВКБ админка для управления Docker контейнерами прямо из браузера. Панель умеет работать как с локально установленным докером, так и с удалёнными серверами.
+docker pull portainer/portainer-ce
+docker volume create portainer_data
+docker run -d -p 9000:9000 --name portainer --restart always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce
 
 
