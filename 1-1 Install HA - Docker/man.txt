@@ -10,14 +10,15 @@ pi
 # Пароль: (пароль не видно при вводе - не боимся!)
 raspberry
 
+# Обновляем пакеты системы.
+sudo apt update
+sudo apt upgrade -y
+
 #Зайдем под повышенными привилегиями (аля из-под админа в Windows).
 sudo - s
 
 # Вводим пароль если запросит (пароль не видно при вводе - не боимся!).
 raspberry
-
-# Обновляем пакеты.
-apt update & apt upgrade -y & apt list --upgradable
 
 # Обновляем Raspberry OS.  На вопрос y/n Нажимаем y на клавиатуре.
 rpi-update
