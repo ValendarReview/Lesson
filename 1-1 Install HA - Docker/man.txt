@@ -77,5 +77,21 @@ raspi-config
 #Устанавливаем пакеты, которые нам будут нужны для дальнейшей работы 
 apt-get install -y bash curl git jq avahi-daemon dbus apparmor-utils libavahi-compat-libdnssd-dev libatlas3-base apt-transport-https ca-certificates socat software-properties-common ftpd mc
 
+#Перезагружаем устройство
+reboot
+
+#Не забываем, что IP адрес изменился, подключаемся SSH PuTTY по тому, который указали вручную. В моем случае это 192.168.1.5 - если по Ethernet кабелю.
+sudo -s 
+# пароль пользоватлея и изменяем метрику в параметрах маршрутизации. 100 это Ethernet подключение, а 600 Wifi. Для стабильной работы WiFi, после отклчюения Ethernet нам надо изменить 600 на 105.
+#переходим по пути 
+cd /etc/NetworkManager/system-connections/
+mc
+
+# Жмем F4 на файле - названии вашей WiFi сети.
+# Выбираем редактор файлов, я рекомендую 2 - mcedit
+# После указания IP адреса в параметрах "[ipv4]" дописываем
+route-metric=105
+
+
 
 
