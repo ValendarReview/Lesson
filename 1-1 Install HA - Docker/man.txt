@@ -30,7 +30,7 @@ reboot
 
 #Добавляем нового пользователя,
 sudo -s & adduser name
-#задаем ему пароль. Пароль видм не будет. Повторяем пароль. Все остальные действия просто жмем Enter. В конце жмем "Y"
+#задаем ему пароль. Пароль видим не будет. Повторяем пароль. Все остальные действия просто жмем Enter. В конце жмем "Y"
 
 #И добавляем его в группу суперпользователя sudo.
 usermod -aG sudo name
@@ -38,7 +38,7 @@ usermod -aG sudo name
 #Зайдем в систему под новым пользователем name
 su name 
 
-#Повысим права до супер пользователя, введя пароль от учетной записи name
+#Повысим права до суперпользователя, введя пароль от учетной записи name
 sudo -s
 
 #Настраиваем сетевые подключения по Ethernet и WiFi. Для этого устанавливаем network-manager.
@@ -65,13 +65,13 @@ nmtui
  #Выбираем "Edit a connection" - далее   "Wifi - Имя Вашей WiFi сети - <Edit...> 
  #В поле "IPv4 CONFIGURATION <A" переходим на строку "Automatic" и выбираем "Manual" после жмем на " <Show>  " и в раскрывшемся меню устанавливаем вручную IP адрес( например 192.168.1.6), шлюз и DNS сервер (можно использовать IP вашего шлюза ( роутера)  192.168.1.1))
 
-#Вовращяемся и в пунтке "Set system hostname " - устанавливаем имя нашего одноплатника "Smart Home Valendar" - вы пишите свео =) 
+#Вовращяемся и в пункте "Set system hostname " - устанавливаем имя нашего одноплатника "Smart Home Valendar" - вы пишите свео =) 
 #После всех настроек "Quit" 
 
 #Настраиваем локаль и часовой пояс.
 raspi-config
 
-# пункт 5 Localisation Options -  I1 Change Locale -  пробелом надо установить локаль -  ru_RU.UTF-8 UTF-8 - TAB и жмем OK. В следующем окне "Default locale for the system environment: " - выбираем  ru_RU.UTF-8     - опять OK
+# пункт 5 Localisation Options -  I1 Change Locale -  пробелом надо установить локаль -  ru_RU.UTF-8 UTF-8 - TAB и жмем OK. В следующем окне "Default locale for the system environment: " - выбираем ru_RU.UTF-8     - опять OK
 # пункт 5 Localisation Options / I2 Change Timezone - пробелом выбираем нужный часовой пояс
 
 #Устанавливаем пакеты, которые нам будут нужны для дальнейшей работы 
@@ -82,7 +82,7 @@ reboot
 
 #Не забываем, что IP адрес изменился, подключаемся SSH PuTTY по тому, который указали вручную. В моем случае это 192.168.1.5 - если по Ethernet кабелю.
 sudo -s 
-# Вводим пароль пользователя и Проверяем метрику подключений в параметрах маршрутизации. 100 это Ethernet подключение, а 600 Wifi. Для стабильной работы WiFi, после отключения Ethernet нам надо изменить 600 на 105.
+# Вводим пароль пользователя и проверяем метрику подключений в параметрах маршрутизации. 100 это Ethernet подключение, а 600 Wifi. Для стабильной работы WiFi, после отключения Ethernet нам надо изменить 600 на 105.
 route
 
 #переходим по пути 
@@ -104,7 +104,7 @@ route
 #Устанавливаем Docker — программное обеспечение для автоматизации развёртывания и управления приложениями.
 curl -fsSL get.docker.com -o get-docker.sh && sh get-docker.sh
 
-# Создаем группу безопасности docker и добавляем в нее пользователя docker. Если в строке есть комманда sudo - вводим пароль пользователя.
+# Создаем группу безопасности docker и добавляем в нее пользователя docker. Если в строке есть команда sudo - вводим пароль пользователя.
 sudo groupadd docker
 sudo gpasswd -a $USER docker
 newgrp docker
@@ -114,28 +114,29 @@ docker pull portainer/portainer-ce
 docker volume create portainer_data
 docker run -d -p 9000:9000 --name portainer --restart always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce
 
-#Настраиваем Portainer через веб-браузер не забывайте изменить на ВАШ IP адрес.#Создаем пользователя и пароль для него.
+#Настраиваем Portainer через веб-браузер не забывайте изменить на ВАШ IP адрес.
+#Создаем пользователя и пароль для него.
 http://192.168.1.5:9000/#!/init/admin
 
 #На вкладке "Connect Portainer to the container environment you want to manage."  выбираем Docker и жмем кнопку "Connect"
 
-#Переходим в режим повышенных привелегий в консоли SSH. Не забываем ввести пароль нашего пользователя.
+#Переходим в режим повышенных привилегий в консоли SSH. Не забываем ввести пароль нашего пользователя.
 sudo -s
 
-#https://github.com/home-assistant/supervised-installer все дополнительные ключи для уствновки в этой инстуркции.
+#https://github.com/home-assistant/supervised-installer все дополнительные ключи для установки в этой инструкции.
 
 curl -Lo installer.sh https://raw.githubusercontent.com/home-assistant/supervised-installer/master/installer.sh
 
-#Если у вас 3 версия Raspberry Pi то прописываем такую комманду
+#Если у вас 3 версия Raspberry Pi то прописываем такую команду
 bash installer.sh --machine raspberrypi3
 
-#Если у вас 3 версия Raspberry Pi то прописываем такую комманду
+#Если у вас 3 версия Raspberry Pi то прописываем такую команду
 bash installer.sh --machine raspberrypi4
 
-#На вопрос "Do you want to proceed with overwriting the /etc/network/interfaces file? [N/y]" жмем N и Энтер.
+#На вопрос "Do you want to proceed with overwriting the /etc/network/interfaces file? [N/y]" жмем N и Enter.
 N
 
-#Проверим все ли ок с маршрутами, что бы WiFi и Ethernet были полностью рядом.
+#Проверим все ли ок с маршрутами, чтобы WiFi и Ethernet были полностью рядом.
 route
 
 #Выходим из консоли управления, в данном уроке она больше не понадобится.
@@ -143,13 +144,8 @@ exit
 exit
 
 #Переходим по заданному одноплатинку ИП адресу и порту 8123, для дальнейшей настройки Home assistant через веб-браузер.
-#Если подклчюение по Ethernet:
+#Если подключение по Ethernet:
 http://192.168.1.5:8123 
 
-#Если подклчюение по WiFi:
+#Если подключение по WiFi:
 http://192.168.1.6:8123 
-
-
-
-
-
