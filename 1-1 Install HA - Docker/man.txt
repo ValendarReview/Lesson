@@ -29,10 +29,7 @@ reboot
 #после этого перезагружаемся, правой кнопкой на верхнем окне PuTTY и выбираем "Restart session"
 
 #Добавляем нового пользователя,
-sudo -s & adduser NAME & usermod -aG sudo NAME
-sudo -s
-adduser name
-
+sudo -s & adduser name
 #задаем ему пароль. Пароль видм не будет. Повторяем пароль. Все остальные действия просто жмем Enter. В конце жмем "Y"
 
 #И добавляем его в группу суперпользователя sudo.
@@ -48,7 +45,8 @@ sudo -s
 apt-get install -y network-manager
 
 #Отключаем встроенный DHCP на двух сетевых интерфейсах 
-echo "denyinterfaces wlan0" >> /etc/dhcpcd.conf & echo "denyinterfaces eth0" >> /etc/dhcpcd.conf
+echo "denyinterfaces wlan0 
+denyinterfaces eth0" >> /etc/dhcpcd.conf
 
 #Отлюкчаем получение случайного MAC адреса при переразгрузке девайса.
 echo "[connection]
@@ -101,20 +99,48 @@ route-metric=105
 # Жмем F2 и Enter - сохранить
 # Перезагружаем девайс и проверяем
 reboot
-sudo -s
 route
 
 #Устанавливаем Docker — программное обеспечение для автоматизации развёртывания и управления приложениями.
 curl -fsSL get.docker.com -o get-docker.sh && sh get-docker.sh
 
-# Создаем группу безопасности docker и добавляем в нее пользователя docker
-groupadd docker
-gpasswd -a $USER docker
+# Создаем группу безопасности docker и добавляем в нее пользователя docker. Если в строке есть комманда sudo - вводим пароль пользователя.
+sudo groupadd docker
+sudo gpasswd -a $USER docker
 newgrp docker
 
 # Устанавливаем Portainer — это удобная ВКБ админка для управления Docker контейнерами прямо из браузера. Панель умеет работать как с локально установленным докером, так и с удалёнными серверами.
 docker pull portainer/portainer-ce
 docker volume create portainer_data
 docker run -d -p 9000:9000 --name portainer --restart always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce
+
+#Настраиваем Portainer через веб-браузер не забывайте изменить на ВАШ IP адрес.#Создаем пользователя и пароль для него.
+http://192.168.1.5:9000/#!/init/admin
+
+#На вкладке "Connect Portainer to the container environment you want to manage."  выбираем Docker и жмем кнопку "Connect"
+
+#Переходим в режим повышенных привелегий в консоли SSH. Не забываем ввести пароль нашего пользователя.
+sudo -s
+
+#https://github.com/home-assistant/supervised-installer все дополнительные ключи для уствновки в этой инстуркции.
+
+curl -Lo installer.sh https://raw.githubusercontent.com/home-assistant/supervised-installer/master/installer.sh
+
+#Если у вас 3 версия Raspberry Pi то прописываем такую комманду
+bash installer.sh --machine raspberrypi3
+
+#Если у вас 3 версия Raspberry Pi то прописываем такую комманду
+bash installer.sh --machine raspberrypi4
+
+
+#Переходим по заданному одноплатинку ИП адресу и порту 8123, для дальнейшей настройки Home assistant через веб-браузер.
+#Если подклчюение по Ethernet:
+http://192.168.1.5:8123 
+
+#Если подклчюение по WiFi:
+http://192.168.1.6:8123 
+
+
+
 
 
