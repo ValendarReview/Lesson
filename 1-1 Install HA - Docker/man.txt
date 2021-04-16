@@ -132,6 +132,9 @@ bash installer.sh --machine raspberrypi3
 #Если у вас 3 версия Raspberry Pi то прописываем такую комманду
 bash installer.sh --machine raspberrypi4
 
+#На вопрос "Do you want to proceed with overwriting the /etc/network/interfaces file? [N/y]" жмем N и Энтер.
+N
+
 #Проверим все ли ок с маршрутами, что бы WiFi и Ethernet были полностью рядом.
 route
 
