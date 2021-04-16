@@ -132,6 +132,8 @@ bash installer.sh --machine raspberrypi3
 #Если у вас 3 версия Raspberry Pi то прописываем такую комманду
 bash installer.sh --machine raspberrypi4
 
+#Проверим все ли ок с маршрутами, что бы WiFi и Ethernet были полностью рядом.
+route
 
 #Переходим по заданному одноплатинку ИП адресу и порту 8123, для дальнейшей настройки Home assistant через веб-браузер.
 #Если подклчюение по Ethernet:
