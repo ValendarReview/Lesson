@@ -32,7 +32,8 @@ passwd
 #Два раза вводим новый пароль
 
 #Добавляем нового пользователя,
-sudo -s & adduser name
+sudo -s 
+adduser name
 #задаем ему пароль. Пароль видим не будет. Повторяем пароль. Все остальные действия просто жмем Enter. В конце жмем "Y"
 
 #И добавляем его в группу суперпользователя sudo.
@@ -56,6 +57,10 @@ echo "[connection]
 wifi.mac-address-randomization=1
 [device]
 wifi.scan-rand-mac-address=no" >> /etc/NetworkManager/conf.d/100-disable-wifi-mac-randomization.conf
+
+#После перезагружаем сервер.
+reboot
+
 
 #Настраиваем статический IP адрес для Ethernet + WiFi + подключимся по Wifi к домашнему роутеру. Тут нам поможет +- графическое приложение nmtui
 nmtui
