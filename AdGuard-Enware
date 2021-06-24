@@ -1,0 +1,59 @@
+1 - Устанавливаем Entware на внутреннюю флеш память , а именно в свободный раздел «RWFS». в Putty терминале вводим: 
+cat /proc/mtd 
+2 - нам надо найти раздел с меткой "RWFS" 
+dev: size erasesize name 
+mtd0: 00080000 00020000 "Bootloader" 
+mtd1: 00080000 00020000 "BootEnv" 
+mtd2: 00500000 00020000 "Factory" 
+mtd3: 00140000 00020000 "Kernel" 
+mtd4: 02ec0000 00020000 "RootFS" 
+mtd5: 00100000 00020000 "Config" 
+mtd6: 00400000 00020000 "Storage" 
+mtd7: 04480000 00020000 "RWFS" - ВОТ ОН - запоминаем название раздела "mtd7" 
+mtd8: 03000000 00020000 "Firmware_Stub" 
+
+3 - необходимо отформатировать этот раздел в файловую систему UBIFS которая предназначена для использования с флеш-накопителями технологии NAND. Для этого единоразовно применим команду: 
+ubiformat /dev/mtd7 
+
+4 - Переключаемся на административный веб интерфейс и переходим в меню скрипты, которое находится по пути «Дополнительные настройки» - «Персонализация» и открываем вкладку «Скрипты». Находим строку со скриптами, которая называется «Выполнить после полного запуска маршрутизатора» и добавляем в нее такой скриптец. 
+ubiattach -p /dev/$(cat /proc/mtd | grep RWFS | egrep '^mtd([0-9])+' -o) ubimkvol /dev/ubi0 -m -N user mkdir /mnt/opt mount -t ubifs ubi0 /mnt/opt opt-mount.sh /dev/ubi0 /mnt echo "# If running interactively, then if [ \"\$PS1\" ] ; then export TERM=xterm export LANG=en_US.UTF-8 export TMP=/opt/tmp export TEMP=/opt/tmp alias mc='mc -c' fi; export TERMINFO=/opt/share/terminfo " > /opt/etc/profile rm /etc/profile echo "# If running interactively, then if [ \"\$PS1\" ] ; then export PATH=/opt/sbin:/opt/bin:/usr/sbin:/usr/bin:/sbin:/bin export HOSTNAME=\`/bin/hostname\` export TERMINFO=/usr/share/terminfo export TERM=xterm fi; [ -r /opt/etc/profile ] && . /opt/etc/profile " > /etc/profile opkg.sh 
+
+5 - перезагружаем роутер 
+
+6 - подключаемся по SSH и опять открываем веб-админку роутера. В консоли SSH вводим команду для проверки, что все у нас получилось. 
+opkg update 
+
+7 - если видим, что пошло обновление и завершилось фразой 
+Updated list of available packages in /opt/var/opkg-lists/entware 
+все ок, можно настаивать AdGuard 
+
+8 - Свободное место раздела проверяем командой 
+df -h 
+
+9- Для владельцев роутера АС2100 с уже устновленым Padavan - прошивка "RM2100_3.4.3.9Z-102-24z5r2l8_full.trx" https://drive.google.com/drive/folders/1LlzoOG9VSE-7aMttwetqCsb-y5bdVPJd 
+
+10 - Проверяем обновления и инсталлируем AdGurad и сертификаты opkg update opkg install http://bin.entware.net/mipselsf-k3.4/keenetic/adguardhome-go_v0.106.3-1_mipsel-3.4.ipk opkg install wget ca-certificates 
+
+11 - Чтобы лишний раз не использовать ресурсы записи/чтения внутренней NAND памяти, переносим весь кеш и прочие временные файлы, которые могут перезаписываться в оперативку нашего роутера. ln -s /tmp /opt/etc/AdGuardHome/data 
+
+12 - Запускаем службу Adguard 
+/opt/etc/init.d/S99adguardhome start 
+
+13- открываем веб-барузер и переходим по пути 
+http://192.168.1.1:3000 
+– где вставьте свой ИП адрес роутера, если он отличается от моего. Важно тут только порт 3000. 
+
+14 - настраиваем порт, по которому будет доступен наша Веб-морда для управления. Я выбрал 8222, и так же прописываем случайный порт для всех DNS запросов я выбрал для DNS 8333 
+
+15- Переходим в веб-морду нашего роутера и указываем, что теперь DNS сопоставления будем брать через наш настроенный сервис. Для этого переходим в меню «Дополнительно» - «Lan» - вкладка Пользовательский файл конфигурации "dnsmasq.conf". В него внесем такие строчки:
+no-resolv 
+server=127.0.0.1#8333 
+server=/use-application-dns.net/ 
+
+!ВНИМАНИЕ, во второй строке укажите ПОРТ который Вы указали в настройке выше порт DNS сервера! 
+Последняя строка говорит браузерам, которые «пробрасывают» DNS запросы по шифрованному HTTPS соединению, что так делать не надо 
+
+16 - Для проверки и установки обновлений. Переходим http://bin.entware.net/mipselsf-k3.4/keenetic/ - если версия adguardhome изменилась, то подключаемся по SSH к нашему роутеру и выполняем простые команды 
+opkg remove adguardhome 
+opkg install "скопированная с сайта ссылка на новый пакет" http://bin.entware.net/mipselsf-k3.4/keenetic/adguardhome-go_v0.106.3-1_mipsel-3.4.ipk 
+/opt/etc/init.d/S99adguardhome restart
