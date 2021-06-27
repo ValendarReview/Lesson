@@ -1,5 +1,6 @@
 1 - Устанавливаем Entware на внутреннюю флеш память , а именно в свободный раздел «RWFS». в Putty терминале вводим: 
 cat /proc/mtd 
+
 2 - нам надо найти раздел с меткой "RWFS" 
 dev: size erasesize name 
 mtd0: 00080000 00020000 "Bootloader" 
@@ -16,7 +17,32 @@ mtd8: 03000000 00020000 "Firmware_Stub"
 ubiformat /dev/mtd7 
 
 4 - Переключаемся на административный веб интерфейс и переходим в меню скрипты, которое находится по пути «Дополнительные настройки» - «Персонализация» и открываем вкладку «Скрипты». Находим строку со скриптами, которая называется «Выполнить после полного запуска маршрутизатора» и добавляем в нее такой скриптец. 
-ubiattach -p /dev/$(cat /proc/mtd | grep RWFS | egrep '^mtd([0-9])+' -o) ubimkvol /dev/ubi0 -m -N user mkdir /mnt/opt mount -t ubifs ubi0 /mnt/opt opt-mount.sh /dev/ubi0 /mnt echo "# If running interactively, then if [ \"\$PS1\" ] ; then export TERM=xterm export LANG=en_US.UTF-8 export TMP=/opt/tmp export TEMP=/opt/tmp alias mc='mc -c' fi; export TERMINFO=/opt/share/terminfo " > /opt/etc/profile rm /etc/profile echo "# If running interactively, then if [ \"\$PS1\" ] ; then export PATH=/opt/sbin:/opt/bin:/usr/sbin:/usr/bin:/sbin:/bin export HOSTNAME=\`/bin/hostname\` export TERMINFO=/usr/share/terminfo export TERM=xterm fi; [ -r /opt/etc/profile ] && . /opt/etc/profile " > /etc/profile opkg.sh 
+ubiattach -p /dev/$(cat /proc/mtd | grep RWFS | egrep '^mtd([0-9])+' -o)
+ubimkvol /dev/ubi0 -m -N user
+mkdir /mnt/opt
+mount -t ubifs ubi0 /mnt/opt
+opt-mount.sh /dev/ubi0 /mnt
+echo "# If running interactively, then
+if [ \"\$PS1\" ] ; then
+    export TERM=xterm
+    export LANG=en_US.UTF-8
+    export TMP=/opt/tmp
+    export TEMP=/opt/tmp
+    alias mc='mc -c'
+fi;
+export TERMINFO=/opt/share/terminfo
+" > /opt/etc/profile
+rm /etc/profile
+echo "# If running interactively, then
+if [ \"\$PS1\" ] ; then
+    export PATH=/opt/sbin:/opt/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    export HOSTNAME=\`/bin/hostname\`
+    export TERMINFO=/usr/share/terminfo
+    export TERM=xterm
+fi;
+[ -r /opt/etc/profile ] && . /opt/etc/profile
+" > /etc/profile
+opkg.sh
 
 5 - перезагружаем роутер 
 
@@ -30,11 +56,16 @@ Updated list of available packages in /opt/var/opkg-lists/entware
 8 - Свободное место раздела проверяем командой 
 df -h 
 
-9- Для владельцев роутера АС2100 с уже устновленым Padavan - прошивка "RM2100_3.4.3.9Z-102-24z5r2l8_full.trx" https://drive.google.com/drive/folders/1LlzoOG9VSE-7aMttwetqCsb-y5bdVPJd 
+9- Для владельцев роутера АС2100 с уже устновленым Padavan - прошивка "RM2100_3.4.3.9Z-102-24z5r2l8_full.trx" 
+https://drive.google.com/drive/folders/1LlzoOG9VSE-7aMttwetqCsb-y5bdVPJd 
 
-10 - Проверяем обновления и инсталлируем AdGurad и сертификаты opkg update opkg install http://bin.entware.net/mipselsf-k3.4/keenetic/adguardhome-go_v0.106.3-1_mipsel-3.4.ipk opkg install wget ca-certificates 
+10 - Проверяем обновления и инсталлируем AdGurad и сертификаты 
+opkg update 
+opkg install http://bin.entware.net/mipselsf-k3.4/keenetic/adguardhome-go_v0.106.3-1_mipsel-3.4.ipk 
+opkg install wget ca-certificates 
 
-11 - Чтобы лишний раз не использовать ресурсы записи/чтения внутренней NAND памяти, переносим весь кеш и прочие временные файлы, которые могут перезаписываться в оперативку нашего роутера. ln -s /tmp /opt/etc/AdGuardHome/data 
+11 - Чтобы лишний раз не использовать ресурсы записи/чтения внутренней NAND памяти, переносим весь кеш и прочие временные файлы, которые могут перезаписываться в оперативку нашего роутера. 
+ln -s /tmp /opt/etc/AdGuardHome/data 
 
 12 - Запускаем службу Adguard 
 /opt/etc/init.d/S99adguardhome start 
